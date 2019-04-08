@@ -1,24 +1,32 @@
 public class Simulation {
 	
 	public static void main (String args[]) {
-        Plateau p = new Plateau(1000, 1000,500);
-			for(int i = 0; i<p.getFourmis().length; i++) {
-				p.addFourmi(new Fourmi(p,true));
-			}
+		Plateau[] ps = new Plateau[1];
+		for(int i = 0; i < ps.length; i++) {
+			ps[i] = new Plateau(500,400,1,0,.1f);
+			
+			if (i==0) {
+				for(int j = 0; j<ps[i].getFourmis().length; j++) {
+					ps[i].addFourmi(new Fourmi(ps[i],true, new int[] {1,1}));
+				}		
+			} else ps[i].setFourmis(ps[0].getFourmis());	
+			
+			System.out.println(ps[i]);
+		}
 			
         
-		Affichage.afficherPlateau(p);
-		System.out.println(p);
+		Affichage.afficherPlateaux(ps);
         pause(500,0);
         
-		for(int i=0; i< 1000000; i++){
-			
-			for(Fourmi f : p.getFourmis()) {
-				if(f != null) p.bougeFourmi(f);
-			}
-			//System.out.println(f);
-			Affichage.afficherPlateau(p);
-            pause(0,1);
+		for(int g=0; g < 1000000; g++) {
+			for (Plateau p : ps)
+				for(int s = 0; s < p.getMaxStepVelocity(); s++)
+					for(Fourmi f : p.getFourmis())
+						if(f != null && s < f.getStepVelocity())
+							p.bougeFourmi(f);
+								
+			Affichage.afficherPlateaux(ps);
+            pause(5,1);
 		}
 	}
 

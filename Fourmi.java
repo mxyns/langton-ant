@@ -6,26 +6,27 @@ public class Fourmi {
     private int l; // indice de la ligne qu'occupe la fourmi dans le monde
     private int c; // indice de la colonne qu'occupe la fourmi dans le monde
     private int d; // direction de la fourmi : 0 vers le haut, 1 vers la droite, 2 vers le bas, 3 vers la gauche
+    private int[] vel; // vel[0] rectilign velocity, vel[1] step velocity (step/gen)
+    private boolean coll = false;
 	private Color cl; // couleur fourmi
-	
 	// Constructeur complet
 	public Fourmi(int x, int y, int d) {
 		this.l = y;
 		this.c = x;
 		this.d = d;
+		this.vel = new int[] {1,1};
 		setRandomColor();
 	}
-	public Fourmi(int x, int y) {
-		this(x,y,0);
-	}
-	public Fourmi(Plateau p, int d) {
+	public Fourmi(Plateau p, int d, int[] vel, boolean coll) {
 		this.l = p.getHeight()/2;
 		this.c = p.getWidth()/2;
 		this.d = d;
+		this.coll = coll;
+		this.vel = vel;
 		setRandomColor();
 	}
-	public Fourmi(Plateau p, boolean r) {
-		this(p,0);
+	public Fourmi(Plateau p, boolean r, int[] vel, boolean coll) {
+		this(p,0,vel, coll);
 		if(r) {
 			this.c = (int)(p.getWidth()*Math.random());
 			this.l = (int)(p.getHeight()*Math.random());
@@ -52,12 +53,26 @@ public class Fourmi {
 	public void setRandomColor() {
 		this.cl = new Color((int)(Math.random() * 0x1000000)).brighter();
 	}
-    
+	public int getStepVelocity() {
+		return this.vel[1];
+	}
+	public int getVelocity() {
+		return this.vel[0];
+	}
+	public void setStepVelocity(int aVel) {
+		this.vel[1] = aVel;
+	}
+	public void setVelocity(int vel) {
+		this.vel[0] = vel;
+	}
+    public boolean doesCollide() {
+		return this.coll;
+	}
     /**
     * Deplacement de la fourmie
     * @param c Vaut true si la case ou se situe la fourmi avant le deplacement est noire (false = blanche)
     */
-	public void avance (boolean c){
+	public void avance(){
         switch(this.d) {
 			case 0: {
 				this.c--;
@@ -71,7 +86,7 @@ public class Fourmi {
 				this.c++;
 				break;
 			}
-			case 3: {
+			default: {
 				this.l--;
 				break;
 			}
@@ -81,6 +96,17 @@ public class Fourmi {
 	public void tourner(boolean c) {
 		this.d += (c ? 1 : 3);
 		this.d = this.d%4;
+	}
+	
+	public boolean collidesWith(Fourmi f) {
+		return (this.doesCollide() && f.doesCollide() && this.c == f.getColonne() && this.l == f.getLigne());
+	}
+	
+	public void onCollideWith(Fourmi coll) {
+		if(!coll.doesCollide()) return;
+		tourner(true);
+		setRandomColor();
+		coll.setRandomColor();
 	}
 	
 	public boolean isOut(Plateau p) {

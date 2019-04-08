@@ -11,6 +11,8 @@ import java.lang.reflect.Field;
 public class Affichage extends JFrame {
     private static Affichage world = null;
     private PanneauGrille pg;
+    
+    private static Affichage worlds[] = null;
 
     private Affichage(Plateau p) {
         super("Fourmi de Langton");
@@ -22,7 +24,16 @@ public class Affichage extends JFrame {
         setResizable(false);
         setVisible(true);
     }
-    
+    private Affichage(Plateau p, int id) {
+        super("Fourmi de Langton #"+(id+1));
+        pg = new PanneauGrille(p);
+        setContentPane(pg);
+        pack();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(true);
+        setVisible(true);
+    }
     /**
      * Affiche un monde.
      * @param monde le monde à afficher
@@ -33,6 +44,18 @@ public class Affichage extends JFrame {
         world.pg.p = p;
         world.repaint();
     }
+    public static void afficherPlateaux(Plateau[] p) {
+		if(worlds == null) {
+			worlds = new Affichage[p.length];
+			for (int i = 0; i < worlds.length; i++) {
+				worlds[i] = new Affichage(p[i], i);
+			}
+		}
+		for(int i = 0; i < worlds.length; i++) {
+			worlds[i].pg.p = p[i];
+			worlds[i].repaint();
+		}
+	}
     
     /**
      * Calcul la resolution la plus appropriee a la taille du monde de
@@ -73,8 +96,14 @@ public class Affichage extends JFrame {
             for (int i = 0; i < nbL; i++)
                 for (int j = 0; j < nbC; j++)
                     if (monde[i][j]){
-						g.setColor(new Color(p.getColors()[i][j]));
+						Color c = new Color(p.getColors()[i][j]);
+						g.setColor(c.brighter());
 						g.fillRect(res*j,res*i,res,res);
+						if(Math.random() < p.getDecayRate()) {
+							float b = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null)[2];
+							p.getColors()[i][j] = c.darker().getRGB();
+							if(b < p.getBrightnessThreshold()) p.getEtat()[i][j] = false;
+						}
 					}
             // fourmi
             for (Fourmi f : p.getFourmis()) {

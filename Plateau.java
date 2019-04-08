@@ -1,10 +1,17 @@
 import java.util.ArrayList;
 
+/* public => ok pour tous
+ * rien (accès package) <=> ok pour même dossier
+ * private => non pour tous
+ */
+
 public class Plateau {
 	
 	private boolean[][] monde; // tableau 2D representant les cases du plateau selon la convention blanc=false et noir=true
 	private int[][] colors;
 	private Fourmi[] f; // instance de la classe Fourmi se deplacant sur le plateau
+	private float decay = 1e-2f;
+	private float brightnessThreshold = .1f;
 	
 	public Plateau(int w, int h) {
 		this.monde = new boolean[h][w];
@@ -17,6 +24,15 @@ public class Plateau {
 		this.monde = new boolean[h][w];
 		this.colors = new int[h][w];
 		this.f = new Fourmi[fSize];
+	}
+	public Plateau(int w, int h, int fSize, float decay, float brightnessThreshold) {
+		this.monde = new boolean[h][w];
+		this.colors = new int[h][w];
+		this.decay = decay;
+		if(this.getDecayRate() != 0) this.brightnessThreshold = brightnessThreshold;
+		this.f = new Fourmi[fSize];
+		
+		System.out.println(this.toString());
 	}
 	
     // Accesseurs
@@ -32,17 +48,42 @@ public class Plateau {
     public boolean[][] getEtat(){
         return this.monde;
     }
+    public void setFourmis(Fourmi[] fs) {
+		this.f = fs;
+	}
     public Fourmi getFourmi(){
         return this.f[0];
     }
     public Fourmi[] getFourmis() {
 		return this.f;
 	}
+	public int getMaxStepVelocity() {
+		int m = 1;
+		for (Fourmi f : this.f)
+			if(f != null && m < f.getStepVelocity())
+				m = f.getStepVelocity();
+				
+		return m;
+	}
+	public int getMaxVelocity() {
+		int m = 1;
+		for (Fourmi f : this.f)
+			if(f != null && m < f.getVelocity())
+				m = f.getVelocity();
+				
+		return m;
+	}
     public boolean getCase(Fourmi f) {
 		return this.monde[f.getLigne()][f.getColonne()];
 	}
 	public int[][] getColors() {
 		return this.colors;
+	}
+	public float getDecayRate() {
+		return this.decay;
+	}
+	public float getBrightnessThreshold() {
+		return this.brightnessThreshold;
 	}
     
     public void addFourmi(Fourmi f) {
@@ -58,19 +99,23 @@ public class Plateau {
 	* Mets a jour le plateau apres une iteration
 	*/
     public void bougeFourmi(Fourmi f){
-        
-        if(f.isOut(this)) {
-			f.getIn(this);
-		}
-        
-        boolean caz = getCase(f);
-        f.tourner(caz);
-        
-        switchCase(f);
-        
-        f.avance(caz);
-        
+			boolean caz = getCase(f);
+			f.tourner(caz);
+		
+		for(int v = 0; v < f.getVelocity(); v++) {
+			switchCase(f);
+			f.avance();
+				collide(f);
+
+			if(f.isOut(this)) f.getIn(this);
+		}  
     }
+    
+    private void collide(Fourmi f) {
+		for (Fourmi fourmi : this.f) {
+			if(f != fourmi && f.collidesWith(fourmi)) f.onCollideWith(fourmi);
+		}
+	}
     
     private void switchCase(Fourmi f) {
 		this.monde[f.getLigne()][f.getColonne()] = !getCase(f); //noire
@@ -82,6 +127,11 @@ public class Plateau {
 		for(Fourmi a : this.f) {
 			if (a != null) b++;
 		}
-		return "Plateau: taille="+this.getTaille()+", "+b+"/"+this.getFourmis().length;
+		return "Plateau: taille="+this.getTaille()+", \n"
+				+b+"/"+this.getFourmis().length+", \n"
+				+"decay="+(this.getDecayRate() == 0 ? "none": this.getDecayRate())+",\n"
+				+" brightnessThreshold="+(this.getDecayRate() == 0 ? "none": this.getBrightnessThreshold())+"\n"
+				+" maxStepVelocity="+this.getMaxStepVelocity()+"\n"
+				+" maxVelocity="+this.getMaxVelocity();
 	}
 }
