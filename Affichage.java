@@ -107,6 +107,7 @@ public class Affichage extends JFrame {
 					}
             // fourmi
             for (Fourmi f : p.getFourmis()) {
+				if(f == null) continue;
 				g.setColor(f.getColor());
 				g.fillRect(f.getColonne()*res,f.getLigne()*res,res,res);
 			}

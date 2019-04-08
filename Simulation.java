@@ -3,13 +3,13 @@ public class Simulation {
 	public static void main (String args[]) {
 		Plateau[] ps = new Plateau[1];
 		for(int i = 0; i < ps.length; i++) {
-			ps[i] = new Plateau(500,400,1,0,.1f);
+			ps[i] = new Plateau(300,300,5,1e-3f,.1f);
 			
 			if (i==0) {
 				for(int j = 0; j<ps[i].getFourmis().length; j++) {
-					ps[i].addFourmi(new Fourmi(ps[i],true, new int[] {1,1}));
+					ps[i].addFourmi(new Fourmi(ps[i],true, new int[] {(int)(3*Math.random()+1),1},true));
 				}		
-			} else ps[i].setFourmis(ps[0].getFourmis());	
+			} else ps[i].setFourmis(ps[0].getFourmis());
 			
 			System.out.println(ps[i]);
 		}

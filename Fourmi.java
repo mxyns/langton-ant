@@ -9,12 +9,21 @@ public class Fourmi {
     private int[] vel; // vel[0] rectilign velocity, vel[1] step velocity (step/gen)
     private boolean coll = false;
 	private Color cl; // couleur fourmi
+	
 	// Constructeur complet
 	public Fourmi(int x, int y, int d) {
 		this.l = y;
 		this.c = x;
 		this.d = d;
 		this.vel = new int[] {1,1};
+		setRandomColor();
+	}
+	public Fourmi(int x, int y, int d, int[] vel, boolean coll) {
+		this.l = x;
+		this.c = y;
+		this.d = d;
+		this.coll = coll;
+		this.vel = vel;
 		setRandomColor();
 	}
 	public Fourmi(Plateau p, int d, int[] vel, boolean coll) {
@@ -99,6 +108,7 @@ public class Fourmi {
 	}
 	
 	public boolean collidesWith(Fourmi f) {
+		if(this == null || f == null) return false;
 		return (this.doesCollide() && f.doesCollide() && this.c == f.getColonne() && this.l == f.getLigne());
 	}
 	

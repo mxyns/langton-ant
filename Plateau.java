@@ -1,10 +1,5 @@
 import java.util.ArrayList;
 
-/* public => ok pour tous
- * rien (accès package) <=> ok pour même dossier
- * private => non pour tous
- */
-
 public class Plateau {
 	
 	private boolean[][] monde; // tableau 2D representant les cases du plateau selon la convention blanc=false et noir=true
@@ -127,7 +122,7 @@ public class Plateau {
 		for(Fourmi a : this.f) {
 			if (a != null) b++;
 		}
-		return "Plateau: taille="+this.getTaille()+", \n"
+		return "Plateau: taille="+this.getTaille()+", "
 				+b+"/"+this.getFourmis().length+", \n"
 				+"decay="+(this.getDecayRate() == 0 ? "none": this.getDecayRate())+",\n"
 				+" brightnessThreshold="+(this.getDecayRate() == 0 ? "none": this.getBrightnessThreshold())+"\n"
