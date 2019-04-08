@@ -1,2 +1,2 @@
-# langton-ant
-Langton ant.
+# langtons-ant
+Langton's ant.
