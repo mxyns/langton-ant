@@ -1,18 +1,18 @@
 import java.util.ArrayList;
 
 public class Plateau {
-	
+
 	private boolean[][] monde; // tableau 2D representant les cases du plateau selon la convention blanc=false et noir=true
 	private int[][] colors;
 	private Fourmi[] f; // instance de la classe Fourmi se deplacant sur le plateau
 	private float decay = 1e-2f;
 	private float brightnessThreshold = .1f;
-	
+
 	public Plateau(int w, int h) {
 		this.monde = new boolean[h][w];
 		this.colors = new int[h][w];
 		this.f = new Fourmi[10];
-		
+
 		System.out.println(this.toString());
 	}
 	public Plateau(int w, int h, int fSize) {
@@ -26,10 +26,10 @@ public class Plateau {
 		this.decay = decay;
 		if(this.getDecayRate() != 0) this.brightnessThreshold = brightnessThreshold;
 		this.f = new Fourmi[fSize];
-		
+
 		System.out.println(this.toString());
 	}
-	
+
     // Accesseurs
     public int getTaille(){
         return this.monde.length*this.monde[0].length;
@@ -52,12 +52,20 @@ public class Plateau {
     public Fourmi[] getFourmis() {
 		return this.f;
 	}
+	public int getFourmisCount() {
+
+		int c=0;
+		for (Fourmi f : f)
+			if (f != null)
+				++c;
+		return c;
+	}
 	public int getMaxStepVelocity() {
 		int m = 1;
 		for (Fourmi f : this.f)
 			if(f != null && m < f.getStepVelocity())
 				m = f.getStepVelocity();
-				
+
 		return m;
 	}
 	public int getMaxVelocity() {
@@ -65,7 +73,7 @@ public class Plateau {
 		for (Fourmi f : this.f)
 			if(f != null && m < f.getVelocity())
 				m = f.getVelocity();
-				
+
 		return m;
 	}
     public boolean getCase(Fourmi f) {
@@ -80,7 +88,9 @@ public class Plateau {
 	public float getBrightnessThreshold() {
 		return this.brightnessThreshold;
 	}
-    
+    public void setDecayRate(float decay) { this.decay = decay;}
+    public void setBrightnessThreshold(float brght) { this.brightnessThreshold = brght;}
+
     public void addFourmi(Fourmi f) {
 		for(int i = 0; i<this.f.length; i++) {
 			if(this.f[i] == null) {
@@ -89,34 +99,34 @@ public class Plateau {
 			}
 		}
 	}
-    
+
 	/**
 	* Mets a jour le plateau apres une iteration
 	*/
     public void bougeFourmi(Fourmi f){
 			boolean caz = getCase(f);
 			f.tourner(caz);
-		
+
 		for(int v = 0; v < f.getVelocity(); v++) {
 			switchCase(f);
 			f.avance();
 				collide(f);
 
 			if(f.isOut(this)) f.getIn(this);
-		}  
+		}
     }
-    
+
     private void collide(Fourmi f) {
 		for (Fourmi fourmi : this.f) {
 			if(f != fourmi && f.collidesWith(fourmi)) f.onCollideWith(fourmi);
 		}
 	}
-    
+
     private void switchCase(Fourmi f) {
 		this.monde[f.getLigne()][f.getColonne()] = !getCase(f); //noire
 		this.colors[f.getLigne()][f.getColonne()] = f.getColor().getRGB();
 	}
-	
+
 	public String toString() {
 		int b=0;
 		for(Fourmi a : this.f) {

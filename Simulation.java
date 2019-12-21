@@ -1,43 +1,77 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Simulation {
-	
-	public static void main (String args[]) {
-		Plateau[] ps = new Plateau[1];
-		for(int i = 0; i < ps.length; i++) {
-			ps[i] = new Plateau(300,300,5,1e-3f,.1f);
-			
-			if (i==0) {
-				for(int j = 0; j<ps[i].getFourmis().length; j++) {
-					ps[i].addFourmi(new Fourmi(ps[i],true, new int[] {(int)(3*Math.random()+1),1},true));
-				}		
-			} else ps[i].setFourmis(ps[0].getFourmis());
-			
-			System.out.println(ps[i]);
-		}
-			
-        
-		Affichage.afficherPlateaux(ps);
-        pause(500,0);
-        
-		for(int g=0; g < 1000000; g++) {
-			for (Plateau p : ps)
-				for(int s = 0; s < p.getMaxStepVelocity(); s++)
-					for(Fourmi f : p.getFourmis())
-						if(f != null && s < f.getStepVelocity())
-							p.bougeFourmi(f);
-								
-			Affichage.afficherPlateaux(ps);
-            pause(5,1);
-		}
+
+	static List<Simulation> simulations = new ArrayList<>();
+
+	private Affichage affichage;
+	private Plateau plateau;
+	private boolean active = true;
+	private int id;
+
+	public Simulation(Plateau p, int id) {
+
+		affichage = new Affichage(p, id);
+		plateau = p;
 	}
 
-    /**
-    * Effectue une pause lors de l'execution du programme.
-    * @param ms Duree de la pause en millisecondes
-    */
-    public static void pause(int ms, int nano) {
-        try{
-            Thread.sleep(ms, nano);
-        }catch(InterruptedException e){}
-    }
+	public Plateau getPlateau() {
+
+		return plateau;
+	}
+
+	public void setPlateau(Plateau plateau) {
+
+		this.plateau = plateau;
+	}
+
+	public Affichage getAffichage() {
+
+		return affichage;
+	}
+
+	public void setAffichage(Affichage affichage) {
+
+		this.affichage = affichage;
+	}
+
+	public boolean delete() {
+
+		getAffichage().dispose();
+		return simulations.remove(this);
+	}
+
+	public boolean isActive() {
+
+		return active;
+	}
+
+	public void stop() {
+
+		active = false;
+	}
+
+	public void start() {
+
+		active = true;
+	}
+
+	public static void make(Plateau p) {
+
+		Simulation sim = new Simulation(p, simulations.size()+1);
+
+		simulations.add(sim);
+	}
+
+	public int getId() {
+
+		return id;
+	}
+
+	public void setId(int id) {
+
+		this.id = id;
+	}
 }
 

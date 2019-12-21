@@ -1,8 +1,8 @@
-import javax.swing.*;
-import java.awt.image.BufferedImage;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import java.awt.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
+import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
  * Gestionnaire d'affichage pour la fourmi de Langton (issue de l'affichage du "Jeu de la vie")
@@ -19,24 +19,24 @@ public class Affichage extends JFrame {
         pg = new PanneauGrille(p);
         setContentPane(pg);
         pack();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
     }
-    private Affichage(Plateau p, int id) {
-        super("Fourmi de Langton #"+(id+1));
+    Affichage(Plateau p, int id) {
+        super("Fourmi de Langton #"+id);
         pg = new PanneauGrille(p);
         setContentPane(pg);
         pack();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(true);
         setVisible(true);
     }
     /**
      * Affiche un monde.
-     * @param monde le monde à afficher
+     * @param p le monde à afficher
      */
     public static void afficherPlateau(Plateau p) {
         if (world==null)
@@ -55,6 +55,19 @@ public class Affichage extends JFrame {
 			worlds[i].pg.p = p[i];
 			worlds[i].repaint();
 		}
+	}
+
+	public static void afficherSimulations() {
+
+        List<Simulation> sims = Simulation.simulations;
+
+        for (Simulation sim : sims) {
+
+            if (sim.isActive()) {
+                sim.getAffichage().pg.p = sim.getPlateau();
+                sim.getAffichage().repaint();
+            }
+        }
 	}
     
     /**
@@ -83,7 +96,7 @@ public class Affichage extends JFrame {
             monde = p.getEtat();
             res = Affichage.calcRes(monde);
             worldImage = new BufferedImage(res*p.getWidth(),res*p.getHeight(),BufferedImage.TYPE_INT_RGB);
-            setPreferredSize(new Dimension(res*p.getWidth(),res*p.getHeight()));
+            setPreferredSize(new Dimension(res * p.getWidth(), res * p.getHeight()));
         }
         private void dessineMonde(Graphics g) {
             int nbL = p.getHeight();
@@ -118,5 +131,7 @@ public class Affichage extends JFrame {
             g.drawImage(worldImage,0,0,null);
         }
     }
+
+    public static Affichage[] getWorlds() { return worlds; }
 }       
 

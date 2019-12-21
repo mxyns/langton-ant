@@ -9,6 +9,7 @@ public class Fourmi {
     private int[] vel; // vel[0] rectilign velocity, vel[1] step velocity (step/gen)
     private boolean coll = false;
 	private Color cl; // couleur fourmi
+	private boolean active = true;
 	
 	// Constructeur complet
 	public Fourmi(int x, int y, int d) {
@@ -42,18 +43,19 @@ public class Fourmi {
 			this.d = (int)(4*Math.random());
 		}
 	}
-	
-    // Accesseurs
+
+	// Accesseurs
 	public int getLigne(){
         return this.l;
     }
-    public int getColonne(){
+	public int getColonne(){
         return this.c;
     }
 	public int getDirection(){
         return this.d;
     }
-    public Color getColor() {
+	public void setDirection(int direction) { this.d = direction; }
+	public Color getColor() {
 		return this.cl;
 	}
 	public void setColor(Color c) {
@@ -74,13 +76,12 @@ public class Fourmi {
 	public void setVelocity(int vel) {
 		this.vel[0] = vel;
 	}
-    public boolean doesCollide() {
+	public boolean doesCollide() {
 		return this.coll;
 	}
-    /**
-    * Deplacement de la fourmie
-    * @param c Vaut true si la case ou se situe la fourmi avant le deplacement est noire (false = blanche)
-    */
+
+	public void setCollisions(boolean coll) { this.coll = coll; }
+
 	public void avance(){
         switch(this.d) {
 			case 0: {
@@ -101,30 +102,34 @@ public class Fourmi {
 			}
 		}
 	}
-	
+
+	/**
+	 * Deplacement de la fourmie
+	 * @param c Vaut true si la case ou se situe la fourmi avant le deplacement est noire (false = blanche)
+	 */
 	public void tourner(boolean c) {
 		this.d += (c ? 1 : 3);
 		this.d = this.d%4;
 	}
-	
+
 	public boolean collidesWith(Fourmi f) {
 		if(this == null || f == null) return false;
 		return (this.doesCollide() && f.doesCollide() && this.c == f.getColonne() && this.l == f.getLigne());
 	}
-	
+
 	public void onCollideWith(Fourmi coll) {
 		if(!coll.doesCollide()) return;
 		tourner(true);
 		setRandomColor();
 		coll.setRandomColor();
 	}
-	
+
 	public boolean isOut(Plateau p) {
 		int w = p.getWidth();
 		int h = p.getHeight();
 		return (this.c < 0 || this.c >= w || this.l < 0 || this.l >= h);
 	}
-	
+
 	public void getIn(Plateau p) {
 		int w = p.getWidth();
 		int h = p.getHeight();
@@ -137,9 +142,13 @@ public class Fourmi {
 		else if (this.c >= w)
 			this.c = 0;
 	}
-	
 	public String toString() {
 		return "Fourmi: x="+this.c+", "+this.l+", d="+this.d;
 	}
+	public boolean isActive() { return active; }
+
+	public void stop() { this.active = false; }
+
+	public void start() { this.active = true; }
 }
 
