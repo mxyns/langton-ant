@@ -110,6 +110,8 @@ public class AntSettings {
 
         this();
 
+        if (fourmi == null) return;
+
         frame.setTitle("Ant mutator");
         confirm.setText("mutate it");
 

@@ -126,6 +126,9 @@ public class Main {
 
             Simulation sim = Simulation.simulations.get(simsList.getSelectedIndex());
             Fourmi f = sim.getPlateau().getFourmis()[antsList.getSelectedIndex()];
+
+            if (f == null) return;
+
             if (f.isActive()){
 
                 toggleFourmi.setText(">");
